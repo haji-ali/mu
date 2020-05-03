@@ -367,13 +367,14 @@ Message-ID."
       (message-narrow-to-headers)
       (unless (message-fetch-field "Message-ID")
         (message-generate-headers '(Date Message-ID))))
-    (save-match-data
-      (mu4e~draft-remove-mail-header-separator))))
+    ;; (save-match-data
+    ;;   (mu4e~draft-remove-mail-header-separator))
+    ))
 
 (defun mu4e~compose-after-save-hook-fn ()
   (save-match-data
     (mu4e~compose-set-friendly-buffer-name)
-    (mu4e~draft-insert-mail-header-separator)
+    ;; (mu4e~draft-insert-mail-header-separator)
     ;; hide some headers again
     (widen)
     (mu4e~compose-hide-headers)
