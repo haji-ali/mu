@@ -359,13 +359,14 @@ Message-ID."
               (save-excursion
                 (message-remove-header "Date")
                 (message-generate-headers '(Date Message-ID))
-                (save-match-data
-                  (mu4e~draft-remove-mail-header-separator)))) nil t)
+                ;; (save-match-data
+                ;;   (mu4e~draft-remove-mail-header-separator))
+                )) nil t)
   (add-hook 'after-save-hook
             (lambda ()
               (save-match-data
                 (mu4e~compose-set-friendly-buffer-name)
-                (mu4e~draft-insert-mail-header-separator)
+                ;; (mu4e~draft-insert-mail-header-separator)
                 ;; hide some headers again
                 (widen)
                 (mu4e~compose-hide-headers)
