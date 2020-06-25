@@ -884,11 +884,15 @@ after the end of the search results."
             (if (eq (current-buffer) (window-buffer))
                 (mu4e-headers-goto-message-id mu4e~headers-msgid-target)
               (let* ((pos (mu4e-headers-goto-message-id mu4e~headers-msgid-target)))
-                (when pos
+                (when (and pos (get-buffer-window))
                   (set-window-point (get-buffer-window nil t) pos)))))
           (when (and mu4e~headers-view-target (mu4e-message-at-point 'noerror))
             ;; view the message at point when there is one.
-            (mu4e-headers-view-message))
+            (let ((mu4e-split-view
+                   (if (eq count 1)
+                       'single-window
+                     mu4e-split-view))) ;; show in a single window if there's only a single message
+              (mu4e-headers-view-message)))
           (setq mu4e~headers-view-target nil
                 mu4e~headers-msgid-target nil)
           (when (mu4e~headers-docid-at-point)
@@ -1346,8 +1350,7 @@ the query history stack."
 
     ;; when the buffer is already visible, select it; otherwise,
     ;; switch to it.
-    (unless (get-buffer-window buf 0)
-      (switch-to-buffer buf))
+    (mu4e~headers-switch-to)
     (run-hook-with-args 'mu4e-headers-search-hook expr)
     (mu4e~headers-clear mu4e~search-message)
     (mu4e~proc-find
@@ -1359,6 +1362,16 @@ the query history stack."
      mu4e-headers-skip-duplicates
      mu4e-headers-include-related)))
 
+(defun mu4e~headers-switch-to (&optional select)
+  (let* ((buf (mu4e-get-headers-buffer))
+         (win (get-buffer-window buf 0)))
+    (if win
+        (select-window win)
+      (setq win (or (get-buffer-window (get-buffer mu4e-main-buffer-name) 0)
+                    (get-buffer-window (mu4e-get-view-buffer) 0)))
+      (when win (select-window win))
+      (switch-to-buffer buf))))
+
 (defun mu4e~headers-redraw-get-view-window ()
   "Close all windows, redraw the headers buffer based on the value
 of `mu4e-split-view', and return a window for the message view."
@@ -1368,7 +1381,7 @@ of `mu4e-split-view', and return a window for the message view."
           (selected-window))
     (unless (buffer-live-p (mu4e-get-headers-buffer))
       (mu4e-error "No headers buffer available"))
-    (switch-to-buffer (mu4e-get-headers-buffer))
+    (mu4e~headers-switch-to)
     (let* ((view-buff (mu4e-get-view-buffer))
            (except-win (list (selected-window)))
            ret-window)
@@ -1379,7 +1392,7 @@ of `mu4e-split-view', and return a window for the message view."
                  (setq ret-window (get-buffer-window view-buff)))
         (setq except-win (cons ret-window except-win)))
       ;; Delete other windows
-      (mu4e-hide-other-mu4e-buffers except-win)
+      ;;(mu4e-hide-other-mu4e-buffers except-win) ;; Why is this needed?
       ;; Kill the previous view buffer
       (when (and (buffer-live-p view-buff))
         (kill-buffer (mu4e-get-view-buffer)))
@@ -2053,7 +2066,8 @@ other windows."
       ;; now, all *other* windows should be gone. kill ourselves, and return
       ;; to the main view
       (kill-buffer)
-      (mu4e~main-view 'refresh))))
+      ;;(mu4e~main-view 'refresh)  ;; I most likely don't want to return to the main menu
+      )))
 
 ;;; _
 (provide 'mu4e-headers)

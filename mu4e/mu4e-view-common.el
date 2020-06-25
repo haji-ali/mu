@@ -225,8 +225,9 @@ other windows."
         (progn
           (kill-buffer)
           (setq mu4e~headers-view-win nil)
-          (when (buffer-live-p (mu4e-get-headers-buffer))
-            (switch-to-buffer (mu4e-get-headers-buffer))))))))
+          ;; (when (buffer-live-p (mu4e-get-headers-buffer))
+          ;;   (switch-to-buffer (mu4e-get-headers-buffer)))
+          )))))
 
 
 (defconst mu4e~view-raw-buffer-name " *mu4e-raw-view*"
