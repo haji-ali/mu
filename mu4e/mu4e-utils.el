@@ -1376,12 +1376,13 @@ value against HEADER-REGEXP in
           #'mu4e-view--try-setup-bug-reference-mode)
 
 (defun mu4e~get-buffer-window (&rest bufs)
-  (let (win)
-    (dolist (buf bufs)
-      (when (stringp buf)
-        (setq buf (get-buffer buf)))
-      (setq win (when buf (get-buffer-window buf 0)))
-      (when win (return win)))))
+  (catch 'retval
+    (let (win)
+      (dolist (buf bufs)
+        (when (stringp buf)
+          (setq buf (get-buffer buf)))
+        (setq win (when buf (get-buffer-window buf 0)))
+        (when win (throw 'retval win))))))
 
 ;;; _
 (provide 'mu4e-utils)
