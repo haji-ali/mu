@@ -1363,14 +1363,17 @@ the query history stack."
      mu4e-headers-include-related)))
 
 (defun mu4e~headers-switch-to (&optional select)
-  (let* ((buf (mu4e-get-headers-buffer))
-         (win (get-buffer-window buf 0)))
+  (let* ((buf (mu4e-get-headers-buffer)) win)
+    (unless buf
+      (error "Header buffer is not open"))
+    (setq win (mu4e~get-buffer-window buf
+                                      (mu4e-get-view-buffer)
+                                      mu4e-main-buffer-name))
     (if win
-        (select-window win)
-      (setq win (or (get-buffer-window (get-buffer mu4e-main-buffer-name) 0)
-                    (get-buffer-window (mu4e-get-view-buffer) 0)))
-      (when win (select-window win))
-      (switch-to-buffer buf))))
+        (progn
+          (select-window win)
+          (switch-to-buffer buf))
+      (select-window (display-buffer buf t)))))
 
 (defun mu4e~headers-redraw-get-view-window ()
   "Close all windows, redraw the headers buffer based on the value

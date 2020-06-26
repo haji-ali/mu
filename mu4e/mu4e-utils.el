@@ -1375,6 +1375,14 @@ value against HEADER-REGEXP in
 (add-hook 'bug-reference-auto-setup-functions
           #'mu4e-view--try-setup-bug-reference-mode)
 
+(defun mu4e~get-buffer-window (&rest bufs)
+  (let (win)
+    (dolist (buf bufs)
+      (when (stringp buf)
+        (setq buf (get-buffer buf)))
+      (setq win (when buf (get-buffer-window buf 0)))
+      (when win (return win)))))
+
 ;;; _
 (provide 'mu4e-utils)
 ;;; mu4e-utils.el ends here
