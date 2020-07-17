@@ -675,11 +675,12 @@ subjects of children.")
          (repeat-char
           (if mu4e-use-fancy-chars (cdr mu4e-headers-thread-subject-repeat)
             (car mu4e-headers-thread-subject-repeat))))
-    (mu4e~stack-push 'mu4e~headers-thread-subject-state
-                     (replace-regexp-in-string mu4e-headers-thread-subject-cleanup-regexp
-                                               "" cur-subject
-                                               nil 'literal)
-                     (plist-get thread :level))
+    (if thread
+        (mu4e~stack-push 'mu4e~headers-thread-subject-state
+                         (replace-regexp-in-string mu4e-headers-thread-subject-cleanup-regexp
+                                                   "" cur-subject
+                                                   nil 'literal)
+                         (plist-get thread :level)))
     (let ((parent-subject (nth 1 mu4e~headers-thread-subject-state)))
       (when parent-subject
         (setq cur-subject
@@ -1367,8 +1368,8 @@ the query history stack."
     (unless buf
       (error "Header buffer is not open"))
     (setq win (mu4e~get-buffer-window buf
-                                      (mu4e-get-view-buffer)
-                                      mu4e-main-buffer-name))
+                                      mu4e-main-buffer-name
+                                      (mu4e-get-view-buffer)))
     (if win
         (progn
           (select-window win)
