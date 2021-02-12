@@ -456,11 +456,15 @@ action', return nil means 'don't do anything'."
          (what mu4e-headers-leave-behavior))
      (unless (zerop marknum) ;; nothing to do?
        (when (eq what 'ask)
-         (setq what (mu4e-read-option
-                     (format  "There are %d existing mark(s); should we: "
-                              marknum)
-                     '( ("apply marks"   . apply)
-                        ("ignore marks?" . ignore)))))
+         (save-window-excursion
+           (when (buffer-live-p (mu4e-get-headers-buffer))
+             (switch-to-buffer (mu4e-get-headers-buffer)))
+           (setq what (mu4e-read-option
+                       (format  "There are %d existing mark(s); should we: "
+                                marknum)
+                       '( ("apply marks"   . apply)
+                          ("ignore marks?" . ignore))))
+           ))
        ;; we determined what to do... now do it
        (when (eq what 'apply)
          (mu4e-mark-execute-all t))))))
