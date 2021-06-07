@@ -463,8 +463,7 @@ action', return nil means 'don't do anything'."
                        (format  "There are %d existing mark(s); should we: "
                                 marknum)
                        '( ("apply marks"   . apply)
-                          ("ignore marks?" . ignore))))
-           ))
+                        ("ignore marks?" . ignore))))))
        ;; we determined what to do... now do it
        (when (eq what 'apply)
          (mu4e-mark-execute-all t))))))
